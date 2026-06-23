@@ -9,4 +9,4 @@ A full-stack shipment tracking system built with Node.js, Express, MongoDB, and 
 
 ## Tech Stack
 - **Backend:** Node.js, Express, MongoDB, Mongoose, JWT
-- **Frontend:** React, Vite, React Router, Axiox.
+- **Frontend:** React, Vite, React Router, Axios.
