@@ -5,7 +5,7 @@ const {
     getMyShipments,
     getShipmentById,
     cancelShipment
-} = require('../controllers/ShipmentContoller');
+} = require('../controllers/ShipmentController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 
 router.post('/', protect, authorize('sender'), createShipment);
