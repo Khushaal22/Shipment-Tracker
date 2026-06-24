@@ -23,7 +23,7 @@ const shipmentSchema = new mongoose.Schema({
         required: true,
         trim: true,
     },
-    recieverEmail: {
+    receiverEmail: {
         type: String,
         trim: true,
         lowercase: true
