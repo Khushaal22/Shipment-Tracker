@@ -3,12 +3,12 @@ import { useNavigate } from "react-router-dom";
 import api from '../../api/axios';
 
 const STATUS_COLORS = {
-  Pending: '#f59e0b',
+  pending: '#f59e0b',
   picked_up: '#3b82f6',
-  In_Transit: '#8b5cf6',
-  Out_For_Delivery: '#06b6d4',
-  Delivered: '#10b981',
-  Cancelled: '#ef4444',
+  in_transit: '#8b5cf6',
+  out_for_delivery: '#06b6d4',
+  delivered: '#10b981',
+  cancelled: '#ef4444',
 };
 
 export default function MyShipments() {
@@ -148,7 +148,7 @@ export default function MyShipments() {
                     View Details
                   </button>
 
-                  {s.currentStatus === 'Pending' && (
+                  {s.currentStatus === 'pending' && (
                     <button
                       type="button"
                       onClick={() => handleCancel(s._id)}

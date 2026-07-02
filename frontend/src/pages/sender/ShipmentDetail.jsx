@@ -3,11 +3,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from '../../api/axios';
 
 const STATUS_COLORS = {
-  Pending: '#f59e0b',      
-  In_Transit: '#8b5cf6',   
-  Out_For_Delivery: '#06b6d4', 
-  Delivered: '#10b981',    
-  Cancelled: '#ef4444', 
+  pending: '#f59e0b',
+  picked_up: '#3b82f6',
+  in_transit: '#8b5cf6',
+  out_for_delivery: '#06b6d4',
+  delivered: '#10b981',
+  cancelled: '#ef4444',
 };
 
 export default function ShipmentDetails() {
@@ -23,7 +24,7 @@ export default function ShipmentDetails() {
         setLoading(true);
         const res = await api.get(`/shipments/${id}`);
         // Adjust res.data based on your API response wrapper shape
-        setShipment(res.data.shipment || res.data); 
+        setShipment(res.data.shipment || res.data);
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to fetch shipment details');
       } finally {
@@ -56,7 +57,7 @@ export default function ShipmentDetails() {
           <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg font-medium">
             {error || 'Shipment record not found.'}
           </div>
-          <button 
+          <button
             onClick={() => navigate('/sender/my-shipments')}
             className="w-full py-2 px-4 border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 transition duration-150 shadow-sm"
           >
@@ -68,17 +69,17 @@ export default function ShipmentDetails() {
   }
 
   // 4. MAIN DATA SHEET VIEW (Only executes when shipment safely exists)
-  const currentStatus = shipment.currentStatus || 'Pending';
+  const currentStatus = shipment.currentStatus || 'pending';
   const statusColor = STATUS_COLORS[currentStatus] || '#6b7280';
 
   return (
     <div className="min-h-screen bg-gray-100 px-4 sm:px-6 lg:px-8 py-6">
       <div className="max-w-3xl mx-auto space-y-6">
-        
+
         {/* Navigation & Header */}
         <div className="flex flex-col space-y-4 border-b border-slate-200 pb-5">
           <div>
-            <button 
+            <button
               onClick={() => navigate('/sender/my-shipments')}
               className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-slate-800 transition duration-150"
             >
@@ -98,7 +99,7 @@ export default function ShipmentDetails() {
             </div>
 
             <div>
-              <span 
+              <span
                 className="px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider inline-block"
                 style={{
                   backgroundColor: `${statusColor}15`,
@@ -113,7 +114,7 @@ export default function ShipmentDetails() {
 
         {/* Main Data Sheet Card */}
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm divide-y divide-slate-100">
-          
+
           {/* 1. Fulfillment Tracking Status */}
           <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50/50 rounded-t-2xl">
             <div className="md:col-span-1">
@@ -185,7 +186,7 @@ export default function ShipmentDetails() {
           </div>
 
           {/* 5. Decommission Log (Cancellation Banner) */}
-          {currentStatus === 'Cancelled' && (
+          {currentStatus === 'cancelled' && (
             <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-4 bg-red-50/50 rounded-b-2xl border-t border-red-100">
               <div>
                 <h3 className="text-xs font-bold uppercase tracking-wider text-red-700">Decommission Log</h3>
