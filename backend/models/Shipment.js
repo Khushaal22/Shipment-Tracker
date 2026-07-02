@@ -59,14 +59,14 @@ const shipmentSchema = new mongoose.Schema({
     parcelType: {
         type: String,
         required: true,
-        enum: ['documents', 'electronics', 'clothing', 'fragile', 'other'], //should be selected as form
+        enum: ['documents', 'electronics', 'clothing', 'fragile', 'other'],
     },
 
     //Status
     currentStatus: {
         type: String,
-        enum: ['Pending', 'picked_up', 'In_Transit', 'Out_For_Delivery', 'Delivered', 'Cancelled'],
-        default: 'Pending',
+        enum: ['pending', 'picked_up', 'in_transit', 'out_for_delivery', 'delivered', 'cancelled'],
+        default: 'pending',
     },
     estimatedDelivery: {
         type: Date,

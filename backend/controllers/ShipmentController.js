@@ -1,4 +1,6 @@
-const Shipment = require('../models/Shipment')
+const Shipment = require('../models/Shipment');
+const shipmentHistory = require('../models/shipmentHistory')
+
 const createShipment = async (req, res) => {
     try {
         const {
@@ -37,6 +39,14 @@ const createShipment = async (req, res) => {
             parcelWeight,
             parcelType,
             estimatedDelivery
+        });
+
+        await shipmentHistory.create({
+            shipmentId: shipment._id,
+            status: 'pending',
+            location: sourceCity,
+            note: 'Shipment created and pickup is pending',
+            updatedBy: req.user.id,
         });
 
         res.status(201).json({
@@ -86,15 +96,23 @@ const cancelShipment = async (req, res) => {
             return res.status(403).json({ message: 'Access denied' });
         }
 
-        if (shipment.currentStatus !== 'Pending') {
+        if (shipment.currentStatus !== 'pending') {
             return res.status(400).json({
                 message: 'Shipment cannot be cancelled now'
             });
         }
-        shipment.currentStatus = 'Cancelled';
+        shipment.currentStatus = 'cancelled';
         shipment.cancelledAt = new Date();
         shipment.cancelReason = req.body.cancelReason || 'Cancelled by Sender';
         await shipment.save();
+
+await shipmentHistory.create({
+    shipmentId: shipment._id,
+    status: 'cancelled',
+    location: '',
+    note: shipment.cancelReason,
+    updatedBy: req.user.id,
+});
 
         res.status(200).json({ message: 'Shipment cancelled successfully', shipment });
     } catch (err) {
