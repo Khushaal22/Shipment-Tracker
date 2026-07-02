@@ -8,12 +8,10 @@ import SenderDashboard from './pages/sender/dashboard';
 import CreateShipment from './pages/sender/createShipment';
 import MyShipments from './pages/sender/MyShipments';
 import ShipmentDetail from './pages/sender/ShipmentDetail';
-
+import TrackerDashboard from './pages/tracker/Dashboard';
+import TrackPage from './pages/TrackPage';
 
 // Placeholder dashboards — filled out in later phases
-function TrackerDashboard() {
-  return <h2>Tracker Dashboard — Phase 3 builds this</h2>;
-}
 function AdminDashboard() {
   return <h2>Admin Dashboard — Phase 5 builds this</h2>;
 }
@@ -27,6 +25,8 @@ export default function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
+          <Route path="/track" element={<TrackPage />} />
+          <Route path="/track/:trackingNumber" element={<TrackPage />} />
 
           {/* Sender only */}
           <Route
