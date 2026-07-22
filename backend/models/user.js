@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['sender', 'tracker', 'admin'],
+        enum: ['sender', 'tracker'],
         default: 'tracker',
     },
 },
