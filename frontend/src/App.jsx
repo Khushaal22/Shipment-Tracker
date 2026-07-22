@@ -68,16 +68,6 @@ export default function App() {
             }
           />
 
-          {/* Admin only */}
-          <Route
-            path="/admin/dashboard"
-            element={
-              <RoleRoute allowedRoles={['admin']}>
-                <AdminDashboard />
-              </RoleRoute>
-            }
-          />
-
           {/* Default */}
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
