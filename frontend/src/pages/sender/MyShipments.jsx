@@ -55,25 +55,40 @@ export default function MyShipments() {
   return (
     <div className="min-h-screen bg-gray-100 px-4 sm:px-6 lg:px-8 py-6">
       <div className="max-w-4xl mx-auto space-y-6">
-        <div className="flex items-center justify-between border-b border-slate-200 pb-5">
+        {/* Navigation & Header */}
+        <div className="flex flex-col space-y-4 border-b border-slate-200 pb-5">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight text-slate-900">
-              My Shipments
-            </h2>
-            <p className="text-sm text-slate-500 mt-0.5">
-              Track and manage your orders in real time!!
-            </p>
+            <button
+              onClick={() => navigate('/sender/dashboard')}
+              className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-slate-800 transition duration-150"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+              </svg>
+              Back to Home
+            </button>
           </div>
 
-          <button
-            onClick={() => navigate('/sender/create-shipment')}
-            className="inline-flex items-center gap-1.5 py-2 px-3.5 border border-transparent rounded-lg text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 shadow-sm"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
-            New Shipment
-          </button>
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+                My Shipments
+              </h2>
+              <p className="text-sm text-slate-500 mt-0.5">
+                Track and manage your orders in real time!!
+              </p>
+            </div>
+
+            <button
+              onClick={() => navigate('/sender/create-shipment')}
+              className="inline-flex items-center gap-1.5 py-2 px-3.5 border border-transparent rounded-lg text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 shadow-sm"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              New Shipment
+            </button>
+          </div>
         </div>
 
         {shipments.length === 0 ? (
