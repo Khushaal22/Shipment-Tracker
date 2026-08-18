@@ -137,7 +137,7 @@ const getDashboardStats = async (req, res) => {
         },
         ]);
 
-        const ressult = {
+        const result = {
             total: 0,
             pending: 0,
             picked_up: 0,
