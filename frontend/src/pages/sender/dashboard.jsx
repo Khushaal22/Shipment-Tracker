@@ -1,9 +1,38 @@
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import api from '../../api/axios';
+
+const STAT_CARDS = [
+    { key: 'total', label: 'Total Shipment', color: '#6b7280' },
+    { key: 'pending', label: 'Pending', color: '#f59e0b' },
+    { key: 'picked_up', label: 'Picked Up', color: '#3b82f6' },
+    { key: 'in_transit', label: 'In Transit', color: '#8b5cf6' },
+    { key: 'out_for_delivery', label: 'Out for Delivery', color: '#06b6d4' },
+    { key: 'delivered', label: 'Delivered', color: '#10b981' },
+    { key: 'cancelled', label: 'Cancelled', color: '#ef4444' },
+];
 
 export default function SenderDashboard() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const [stats, setstats] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const res = await api.get('/shipments/stats');
+                setstats(res.data.stats);
+            } catch (err) {
+                setError('Failed to load stats');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchStats();
+    }, []);
 
     const handleLogout = () => {
         logout();
@@ -13,15 +42,17 @@ export default function SenderDashboard() {
     return (
         <div className="min-h-screen bg-gray-100 px-4 sm:px-6 lg:px-8 py-6">
             <div className="max-w-4xl mx-auto space-y-8">
+
+                {/* Header Section */}
                 <div className="flex items-center justify-between border-b border-slate-200 pb-5">
                     <div>
-                        <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                        </span>
                         <h2 className="text-2xl font-bold tracking-tight text-slate-900 mt-0.5">
                             Welcome back, {user?.name || 'User'}
                         </h2>
+                        <p className="text-sm text-slate-500 mt-1">
+                            Here is your shipment overview and activity metrics.
+                        </p>
                     </div>
-
                     <button
                         onClick={handleLogout}
                         className="px-3.5 py-2 border border-slate-200 rounded-lg text-xs font-semibold text-slate-600 bg-white hover:bg-slate-50 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-500/20 transition duration-150 shadow-sm"
@@ -29,12 +60,49 @@ export default function SenderDashboard() {
                         Logout
                     </button>
                 </div>
+
+                {/* Stats Cards Grid */}
+                {loading ? (
+                    <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 text-center">
+                        <p className="text-sm text-slate-400 font-medium animate-pulse">Loading stats...</p>
+                    </div>
+                ) : error ? (
+                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                        <p className="text-sm font-medium text-red-600">{error}</p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        {STAT_CARDS.map((card) => (
+                            <div
+                                key={card.key}
+                                className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between transition-all duration-150 hover:shadow-md"
+                            >
+                                <div className="flex items-center justify-between">
+                                    <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                                        {card.label}
+                                    </span>
+                                    <span
+                                        className="w-2 h-2 rounded-full"
+                                        style={{ backgroundColor: card.color }}
+                                    />
+                                </div>
+                                <p
+                                    className="text-3xl font-bold mt-4 tracking-tight"
+                                    style={{ color: card.color }}
+                                >
+                                    {stats[card.key] ?? 0}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {/* Manage & Quick Actions Workspace */}
                 <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
                     <div>
                         <h3 className="text-lg font-bold text-slate-900">Manage your Shipments</h3>
                         <p className="text-sm text-slate-500 mt-1">
-                            {/* replace below line */}
-                            Dispatched goods routing pipelines. Choose an operations workspace below.
+                            Choose an operations workspace below to create new dispatches or track ongoing items.
                         </p>
                     </div>
                     <div className="mt-6 flex flex-col sm:flex-row gap-4">
