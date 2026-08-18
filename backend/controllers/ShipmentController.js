@@ -1,5 +1,6 @@
 const Shipment = require('../models/Shipment');
-const shipmentHistory = require('../models/shipmentHistory')
+const shipmentHistory = require('../models/shipmentHistory');
+const mongoose = require('mongoose');
 
 const createShipment = async (req, res) => {
     try {
@@ -106,18 +107,57 @@ const cancelShipment = async (req, res) => {
         shipment.cancelReason = req.body.cancelReason || 'Cancelled by Sender';
         await shipment.save();
 
-await shipmentHistory.create({
-    shipmentId: shipment._id,
-    status: 'cancelled',
-    location: '',
-    note: shipment.cancelReason,
-    updatedBy: req.user.id,
-});
+        await shipmentHistory.create({
+            shipmentId: shipment._id,
+            status: 'cancelled',
+            location: '',
+            note: shipment.cancelReason,
+            updatedBy: req.user.id,
+        });
 
         res.status(200).json({ message: 'Shipment cancelled successfully', shipment });
     } catch (err) {
         res.status(500).json({ message: 'Server error', error: err.message });
     }
+
 };
 
-module.exports = { createShipment, getMyShipments, getShipmentById, cancelShipment };
+const getDashboardStats = async (req, res) => {
+    try {
+        const senderId = req.user.id;
+        const stats = await Shipment.aggregate([{
+            $match: {
+                senderId: new mongoose.Types.ObjectId(senderId),
+            },
+        }, {
+            $group: {
+                _id: '$currentStatus',
+                count: { $sum: 1 },
+            },
+        },
+        ]);
+
+        const ressult = {
+            total: 0,
+            pending: 0,
+            picked_up: 0,
+            in_transit: 0,
+            out_for_delivery: 0,
+            delivered: 0,
+            cancelled: 0,
+        };
+
+        stats.forEach((s) => {
+            if (result.hasOwnProperty(s._id)) {
+                result[s._id] = s.count;
+            }
+            result.total += s.count;
+        });
+
+        res.status(200).json({ stats: result });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    };
+}
+
+module.exports = { createShipment, getMyShipments, getShipmentById, cancelShipment, getDashboardStats, };
