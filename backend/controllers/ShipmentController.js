@@ -1,6 +1,7 @@
 const Shipment = require('../models/Shipment');
 const shipmentHistory = require('../models/shipmentHistory');
 const mongoose = require('mongoose');
+const SendEmail = require('../utils/SendEmail');
 
 const createShipment = async (req, res) => {
     try {
@@ -49,6 +50,17 @@ const createShipment = async (req, res) => {
             note: 'Shipment created and pickup is pending',
             updatedBy: req.user.id,
         });
+
+        if (receiverEmail) {
+            await SendEmail({
+                to: receiverEmail,
+                receiverName,
+                trackingNumber,
+                sourceCity,
+                destinationCity,
+                estimatedDelivery,
+            });
+        }
 
         res.status(201).json({
             message: "Shipment created successfully",
