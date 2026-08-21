@@ -1,22 +1,15 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const SendEmail = async ({ to, receiverName, trackingNumber, sourceCity, destinationCity, estimatedDelivery }) => {
-    try {
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS,
-            },
-        });
+  try {
+    const trackingLink = `${process.env.CLIENT_URL}/track/${trackingNumber}`;
 
-        const trackingLink = `${process.env.CLIENT_URL}/track/${trackingNumber}`;
-
-        const mailOptions = {
-            from: `"Shipment Tracker" <${process.env.EMAIL_USER}>`,
-            to,
-            subject: `Your Shipment is on its way- Tracking Number: ${trackingNumber}`,
-            html: `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
+    await resend.emails.send({
+      from: 'Shipment Tracker <onboarding@resend.dev>',
+      to,
+      subject: `Your Shipment is on its way - ${trackingNumber}`,
+      html: ` <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
           <h2 style="color: #3b82f6;">Shipment Notification</h2>
           <p>Hello <strong>${receiverName}</strong>,</p>
           <p>A shipment has been created for you. Here are the details:</p>
@@ -45,13 +38,11 @@ const SendEmail = async ({ to, receiverName, trackingNumber, sourceCity, destina
             This is an automated message from Shipment Tracker. Please do not reply to this email.
           </p>
         </div>`,
-        };
-
-        await transporter.sendMail(mailOptions);
-        console.log(`Email sent to ${to}`);
-    } catch (err) {
-        console.log('Email sending failed:', err);
-    }
+    });
+    console.log(`Email sent to ${to}`);
+  } catch (err) {
+    console.error('Email sending failed:', err);
+  }
 };
 
 module.exports = SendEmail;
