@@ -17,13 +17,14 @@ export default function ShipmentDetails() {
   const [shipment, setShipment] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [downloading, setDownloading] = useState(false);
+
 
   useEffect(() => {
     const fetchShipmentDetails = async () => {
       try {
         setLoading(true);
         const res = await api.get(`/shipments/${id}`);
-        // Adjust res.data based on your API response wrapper shape
         setShipment(res.data.shipment || res.data);
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to fetch shipment details');
@@ -34,7 +35,28 @@ export default function ShipmentDetails() {
     if (id) fetchShipmentDetails();
   }, [id]);
 
-  // 2. LOADING STATE: Prevents reading properties of null while waiting on the network
+  const handleDownloadReceipt = async () => {
+    setDownloading(true);
+    try {
+      const res = await api.get(`/shipments/${id}/receipt`, {
+        responseType: 'blob'
+      });
+
+      const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `receipt-${shipment.trackingNumber}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      alert('Failed to download receipt');
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -49,7 +71,6 @@ export default function ShipmentDetails() {
     );
   }
 
-  // 3. ERROR STATE: Elegant fallback if the ID is wrong or server drops out
   if (error || !shipment) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
@@ -68,12 +89,11 @@ export default function ShipmentDetails() {
     );
   }
 
-  // 4. MAIN DATA SHEET VIEW (Only executes when shipment safely exists)
   const currentStatus = shipment.currentStatus || 'pending';
   const statusColor = STATUS_COLORS[currentStatus] || '#6b7280';
 
   return (
-    <div className="min-h-screen bg-gray-100 px-4 sm:px-6 lg:px-8 py-6">
+    <div className="min-h-screen bg-slate-50 px-4 sm:px-6 lg:px-8 py-8">
       <div className="max-w-3xl mx-auto space-y-6">
 
         {/* Navigation & Header */}
@@ -90,15 +110,15 @@ export default function ShipmentDetails() {
             </button>
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight text-slate-900">Shipment Manifest</h2>
+              <h2 className="text-2xl font-bold tracking-tight text-slate-900">Shipment Details</h2>
               <p className="text-sm text-slate-500 mt-0.5">
                 Tracking Token: <span className="font-mono font-bold text-slate-700 select-all">{shipment.trackingNumber}</span>
               </p>
             </div>
 
-            <div>
+            <div className="flex items-center gap-3">
               <span
                 className="px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider inline-block"
                 style={{
@@ -108,6 +128,17 @@ export default function ShipmentDetails() {
               >
                 {currentStatus.replace(/_/g, ' ')}
               </span>
+
+              <button
+                onClick={handleDownloadReceipt}
+                disabled={downloading}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 text-white text-xs font-medium rounded-lg transition duration-150 shadow-sm"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                </svg>
+                {downloading ? 'Downloading...' : 'Download Receipt'}
+              </button>
             </div>
           </div>
         </div>
@@ -121,7 +152,7 @@ export default function ShipmentDetails() {
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">Logistics Windows</h3>
             </div>
             <div className="md:col-span-2 space-y-1">
-              <p className="text-sm text-slate-500">Estimated Delivery Arrival:</p>
+              <p className="text-xs text-slate-500 uppercase tracking-wider">Estimated Arrival</p>
               <p className="text-base font-semibold text-slate-900">
                 {shipment.estimatedDelivery ? new Date(shipment.estimatedDelivery).toDateString() : 'TBD'}
               </p>
@@ -133,11 +164,11 @@ export default function ShipmentDetails() {
             <div>
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">Route & Transit</h3>
             </div>
-            <div className="md:col-span-2 space-y-4">
+            <div className="md:col-span-2">
               <div className="flex gap-3">
-                <div className="flex flex-col items-center">
-                  <div className="w-2 h-2 rounded-full bg-blue-500 mt-1.5" />
-                  <div className="w-0.5 h-10 bg-slate-200 my-1" />
+                <div className="flex flex-col items-center pt-1">
+                  <div className="w-2 h-2 rounded-full bg-blue-500" />
+                  <div className="w-0.5 h-8 bg-slate-200 my-1" />
                   <div className="w-2 h-2 rounded-full bg-slate-400" />
                 </div>
                 <div className="space-y-3 text-sm">
@@ -185,7 +216,7 @@ export default function ShipmentDetails() {
             </div>
           </div>
 
-          {/* 5. Decommission Log (Cancellation Banner) */}
+          {/* 5. Cancellation Banner */}
           {currentStatus === 'cancelled' && (
             <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-4 bg-red-50/50 rounded-b-2xl border-t border-red-100">
               <div>
