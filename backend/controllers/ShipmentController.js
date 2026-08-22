@@ -2,6 +2,7 @@ const Shipment = require('../models/Shipment');
 const shipmentHistory = require('../models/shipmentHistory');
 const mongoose = require('mongoose');
 const SendEmail = require('../utils/SendEmail');
+const GenerateReceipt = require('../utils/GenerateReceipt');
 
 const createShipment = async (req, res) => {
     try {
@@ -172,4 +173,29 @@ const getDashboardStats = async (req, res) => {
     };
 }
 
-module.exports = { createShipment, getMyShipments, getShipmentById, cancelShipment, getDashboardStats, };
+const downloadReceipt = async (req, res) => {
+    try {
+        const shipment = await Shipment.findById(req.params.id);
+
+        if (!shipment) {
+            return res.status(404).json({ message: 'Shipment not found' });
+        }
+        if (shipment.senderId.toString() != req.user.id) {
+            return res.status(403).json({ message: 'Access Denied' });
+        }
+
+        const pdfBuffer = await GenerateReceipt(shipment);
+
+        res.set({
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': `attachment; filename="receipt-${shipment.trackingNumber}.pdf"`,
+            'Content-Length': pdfBuffer.length,
+        });
+
+        res.send(pdfBuffer);
+    } catch (err) {
+        res.status(500).json({ messsage: 'Server error', error: err.message });
+    }
+};
+
+module.exports = { createShipment, getMyShipments, getShipmentById, cancelShipment, getDashboardStats, downloadReceipt };
