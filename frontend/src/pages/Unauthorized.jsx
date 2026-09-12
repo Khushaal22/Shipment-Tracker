@@ -4,7 +4,6 @@ import { useAuth } from "../context/AuthContext";
 const roleRedirects = {
     sender: '/sender/dashboard',
     tracker: '/tracker/dashboard',
-    admin: '/admin/dashboard',
 };
 
 export default function Unauthorized() {
