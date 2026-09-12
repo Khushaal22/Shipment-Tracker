@@ -68,7 +68,7 @@ const createShipment = async (req, res) => {
             shipment
         });
     } catch (err) {
-        res.status(500).json({ message: 'Server error', error: err.message });
+        next(err);
     }
 };
 
@@ -77,7 +77,7 @@ const getMyShipments = async (req, res) => {
         const shipments = await Shipment.find({ senderId: req.user.id }).sort({ createdAt: -1 });
         res.status(200).json({ shipments });
     } catch (err) {
-        res.status(500).json({ message: 'Server error', error: err.message });
+        next(err);
     }
 };
 
@@ -95,7 +95,7 @@ const getShipmentById = async (req, res) => {
 
         res.status(200).json({ shipment });
     } catch (err) {
-        res.status(500).json({ message: 'Server error', error: err.message });
+        next(err);
     }
 };
 
@@ -169,7 +169,7 @@ const getDashboardStats = async (req, res) => {
 
         res.status(200).json({ stats: result });
     } catch (err) {
-        res.status(500).json({ message: 'Server error', error: err.message });
+        next(err);
     };
 }
 
@@ -194,7 +194,7 @@ const downloadReceipt = async (req, res) => {
 
         res.send(pdfBuffer);
     } catch (err) {
-        res.status(500).json({ messsage: 'Server error', error: err.message });
+        next(err);
     }
 };
 

@@ -25,7 +25,7 @@ const trackShipment = async (req, res) => {
             history,
         });
     } catch (err) {
-        res.status(500).json({ message: 'Server error', error: err.message });
+        next(err);
     }
 };
 

@@ -47,7 +47,7 @@ const register = async (req, res) => {
             token: generateToken(user),
         });
     } catch (err) {
-        res.status(500).json({ message: 'Registering error', error: err.message });
+        next(err);
     }
 };
 
@@ -70,7 +70,7 @@ const login = async (req, res) => {
             token: generateToken(user),
         });
     } catch (err) {
-        res.status(500).json({ message: 'Server error', error: err.message });
+        next(err);
     }
 };
 
@@ -80,7 +80,7 @@ const getMe = async (req, res) => {
         if (!user) return res.status(404).json({ message: 'User not found' });
         res.json(user);
     } catch (err) {
-        res.status(500).json({ message: 'Server error', error: err.message })
+        next(err);
     }
 };
 
