@@ -22,7 +22,7 @@ const SendEmail = async ({ to, receiverName, trackingNumber, sourceCity, destina
           </div>
 
           <p>Click the button below to track your shipment at any time:</p>
-          
+          <a
             href="${trackingLink}"
             style="display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-top: 8px;"
           >
