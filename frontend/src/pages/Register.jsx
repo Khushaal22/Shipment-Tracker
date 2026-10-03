@@ -3,18 +3,12 @@ import { useNavigate, Link } from "react-router-dom";
 import api from '../api/axios';
 import { useAuth } from "../context/AuthContext";
 
-const roleRedirects = {
-  sender: '/sender/dashboard',
-  tracker: '/tracker/dashboard',
-};
-
 export default function Register() {
   const [form, setForm] = useState({
     name: '',
     email: '',
     password: '',
     phone: '',
-    role: 'tracker',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -42,7 +36,7 @@ export default function Register() {
     try {
       const res = await api.post('/auth/register', form);
       login(res.data.user, res.data.token);
-      navigate(roleRedirects[res.data.user.role] || '/');
+      navigate('/home');
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed. Please try again.');
     } finally {
@@ -166,29 +160,6 @@ export default function Register() {
               required
               className="block w-full px-3.5 py-2.5 text-slate-900 placeholder-slate-400 bg-slate-50/50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition-all text-sm"
             />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
-              Account Type
-            </label>
-            <div className="relative">
-              <select
-                name="role"
-                value={form.role}
-                onChange={handleChange}
-                className="block w-full px-3.5 py-2.5 text-slate-900 bg-slate-50/50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition-all text-sm appearance-none cursor-pointer"
-                style={{
-                  backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
-                  backgroundRepeat: 'no-repeat',
-                  backgroundPosition: 'right 0.85rem center',
-                  backgroundSize: '1em'
-                }}
-              >
-                <option value="tracker">Track shipments (Receiver)</option>
-                <option value="sender">Send shipments (Sender)</option>
-              </select>
-            </div>
           </div>
 
           <button
