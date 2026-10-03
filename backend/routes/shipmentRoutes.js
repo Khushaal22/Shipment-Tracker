@@ -8,13 +8,13 @@ const {
     getDashboardStats,
     downloadReceipt,
 } = require('../controllers/ShipmentController');
-const { protect, authorize } = require('../middleware/authMiddleware');
+const { protect } = require('../middleware/authMiddleware');
 
-router.get('/stats', protect, authorize('sender'), getDashboardStats);
-router.get('/my', protect, authorize('sender'), getMyShipments);
-router.post('/', protect, authorize('sender'), createShipment);
-router.get('/:id/receipt', protect, authorize('sender'), downloadReceipt);
-router.get('/:id', protect, authorize('sender'), getShipmentById);
-router.patch('/:id/cancel', protect, authorize('sender'), cancelShipment);
+router.get('/stats', protect, getDashboardStats);
+router.get('/my', protect, getMyShipments);
+router.post('/', protect, createShipment);
+router.get('/:id/receipt', protect, downloadReceipt);
+router.get('/:id', protect, getShipmentById);
+router.patch('/:id/cancel', protect, cancelShipment);
 
 module.exports = router;
