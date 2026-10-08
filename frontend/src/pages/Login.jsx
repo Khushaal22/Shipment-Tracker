@@ -59,7 +59,7 @@ export default function Login() {
                     </div>
 
                     <h2 className="text-2xl font-bold tracking-tight text-slate-900">
-                        Logistics Tracker
+                        Shipment Tracker
                     </h2>
                     <p className="mt-1.5 text-sm text-slate-500">
                         Welcome back! Please sign in to your account.

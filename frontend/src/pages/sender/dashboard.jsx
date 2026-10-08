@@ -47,7 +47,7 @@ export default function SenderDashboard() {
                 <div className="flex items-center justify-between border-b border-slate-200 pb-5">
                     <div>
                         <h2 className="text-2xl font-bold tracking-tight text-slate-900 mt-0.5">
-                            Welcome back, {user?.name || 'User'}
+                            Welcome {user?.name || 'User'}
                         </h2>
                         <p className="text-sm text-slate-500 mt-1">
                             Here is your shipment overview and activity metrics.
