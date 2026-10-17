@@ -2,6 +2,10 @@
 
 A full-stack web application for creating and managing shipments, tracking deliveries by tracking number, notifying receivers by email, and downloading PDF receipts.
 
+**Live demo:** https://shipment-tracker-hazel-mu.vercel.app
+
+> The backend runs on Render's free tier, so the first request after a period of inactivity can take 30-60 seconds while the server wakes up.
+
 ## Features
 
 - **Authentication:** register and log in with JWT-based sessions and bcrypt-hashed passwords.
@@ -17,7 +21,7 @@ A full-stack web application for creating and managing shipments, tracking deliv
 
 ```mermaid
 flowchart TD
-    Browser[React + Vite browser app] -->|Axios HTTP requests| API[Node.js + Express REST API]
+    Browser[React + Vite app on Vercel] -->|Axios HTTP requests| API[Node.js + Express REST API on Render]
     API -->|Mongoose| DB[(MongoDB Atlas)]
     API -->|On shipment creation, if receiver email provided| Email[Resend API]
     API -->|On receipt download| PDF[PDFKit in-memory PDF]
@@ -28,11 +32,12 @@ flowchart TD
 | Layer | Technology |
 | --- | --- |
 | Frontend | React 19, Vite, React Router DOM, Axios, Tailwind CSS (selected pages) |
-| Backend | Node.js, Express 5 |
+| Backend | Node.js 22, Express 5 |
 | Database | MongoDB Atlas, Mongoose |
 | Authentication | JSON Web Tokens (`jsonwebtoken`), `bcryptjs` |
 | Email | Resend |
 | PDF | PDFKit |
+| Hosting | Vercel (frontend), Render (backend), MongoDB Atlas (database) |
 | Tooling | `nodemon` (backend dev), ESLint (frontend) |
 
 ## Project Structure
@@ -48,6 +53,7 @@ shipment-tracker/
 │   ├── middleware/      # auth (JWT) and error handling
 │   └── utils/           # Email sending, PDF receipt generation
 └── frontend/
+    ├── vercel.json      # SPA rewrite so deep links work on Vercel
     └── src/
         ├── api/         # Axios instance and interceptors
         ├── context/     # AuthContext
@@ -59,15 +65,15 @@ shipment-tracker/
 
 ### Prerequisites
 
-- Node.js and npm
+- Node.js 20.19+ (22 recommended) and npm
 - A MongoDB Atlas cluster (or any MongoDB connection string)
 - A [Resend](https://resend.com) API key (only needed for email notifications)
 
 ### 1. Clone the repository
 
 ```bash
-git clone <your-repository-url>
-cd shipment-tracker
+git clone https://github.com/Khushaal22/Shipment-Tracker.git
+cd Shipment-Tracker
 ```
 
 ### 2. Configure the backend
@@ -95,7 +101,7 @@ npm run dev     # development, with nodemon
 npm start       # plain node
 ```
 
-The API runs at `http://localhost:5000`. Health check: `GET http://localhost:5000/api/health` should return `{"status":"ok"}`.
+The API runs at `http://localhost:5000`. Health check: `GET http://localhost:5000/api/health` should return `{"status":"OK","message":"server is running"}`.
 
 ### 3. Configure the frontend
 
@@ -123,6 +129,26 @@ The app runs at `http://localhost:5173`.
 Other frontend scripts: `npm run build` (production build), `npm run preview` (serve the build), `npm run lint`.
 
 > **Never commit real `.env` files.** Keep secrets out of version control.
+
+## Deployment
+
+The app is deployed as three parts: MongoDB Atlas (database), Render (backend) and Vercel (frontend).
+
+### Backend on Render (Web Service)
+
+- Root directory: `backend`
+- Build command: `npm install`
+- Start command: `npm start`
+- Environment variables: `MONGO_URI`, `JWT_SECRET`, `JWT_EXPIRES_IN`, `RESEND_API_KEY`, `CLIENT_URL` (the deployed frontend URL, no trailing slash) and `NODE_VERSION=22`
+- Do not set `PORT`; Render provides it.
+- MongoDB Atlas Network Access must allow Render's outbound traffic (on the free tier, `0.0.0.0/0`).
+- Verify the deploy at `https://<your-service>.onrender.com/api/health`.
+
+### Frontend on Vercel
+
+- Root directory: `frontend`, framework preset: Vite
+- Environment variable: `VITE_API_BASE_URL=https://<your-service>.onrender.com/api` (set before building, because Vite embeds it at build time)
+- `frontend/vercel.json` rewrites every route to `index.html`, so direct links such as `/track/<tracking-number>` work.
 
 ## Application Flow
 
@@ -160,13 +186,14 @@ Protected endpoints expect the JWT in the request's authorization header; the fr
 ## Known Limitations
 
 - **Status progression:** new shipments start as `pending` and can be cancelled, but there is currently no way to advance a shipment through the later statuses.
-- **Email delivery:** Resend's test sender can only deliver to limited recipients. Sending to arbitrary receivers requires a verified sending domain.
+- **Email delivery:** Resend's test sender can only deliver to the account owner's email. Sending to arbitrary receivers requires a verified sending domain.
+- **Cold starts:** the free Render instance sleeps when idle, so the first request can be slow.
 - **Styling:** the UI mixes Tailwind CSS and inline styles.
 
 ## Roadmap
 
-- Deploy the backend (Railway) and frontend (Vercel).
 - Decide on and implement shipment status updates.
+- Verify a sending domain in Resend for production email delivery.
 
 ## Author
 
