@@ -4,8 +4,6 @@ A full-stack web application for creating and managing shipments, tracking deliv
 
 **Live demo:** https://shipment-tracker-hazel-mu.vercel.app
 
-> The backend runs on Render's free tier, so the first request after a period of inactivity can take 30-60 seconds while the server wakes up.
-
 ## Features
 
 - **Authentication:** register and log in with JWT-based sessions and bcrypt-hashed passwords.
@@ -128,8 +126,6 @@ The app runs at `http://localhost:5173`.
 
 Other frontend scripts: `npm run build` (production build), `npm run preview` (serve the build), `npm run lint`.
 
-> **Never commit real `.env` files.** Keep secrets out of version control.
-
 ## Deployment
 
 The app is deployed as three parts: MongoDB Atlas (database), Render (backend) and Vercel (frontend).
@@ -182,13 +178,6 @@ Protected endpoints expect the JWT in the request's authorization header; the fr
 ## Shipment Statuses
 
 `pending` → `picked_up` → `in_transit` → `out_for_delivery` → `delivered`, or `cancelled`.
-
-## Known Limitations
-
-- **Status progression:** new shipments start as `pending` and can be cancelled, but there is currently no way to advance a shipment through the later statuses.
-- **Email delivery:** Resend's test sender can only deliver to the account owner's email. Sending to arbitrary receivers requires a verified sending domain.
-- **Cold starts:** the free Render instance sleeps when idle, so the first request can be slow.
-- **Styling:** the UI mixes Tailwind CSS and inline styles.
 
 ## Roadmap
 
